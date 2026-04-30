@@ -2,19 +2,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cvxpy as cp
 
-# Badgwell (1997), Example 1
-# Robust MPC of Stable Linear Systems
-#
-# Generates 4 figures:
-#   1) NMPC vs RLQR for g = 5, N = 1
-#   2) NMPC vs RLQR for g = 3, N = 1
-#   3) NMPC vs RLQR for g = 1, N = 1
-#   4) RLQR for N = 1, 5, 10 with g = 5
-#
-# Axis limits:
-#   state y-axis: [-1, 1]
-#   input y-axis: [-0.2, 0.2]
-
 # Paper setup
 a = 0.5
 b_min = 4.0

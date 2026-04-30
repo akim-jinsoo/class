@@ -3,30 +3,12 @@ import matplotlib.pyplot as plt
 import cvxpy as cp
 from scipy.linalg import expm, solve_discrete_lyapunov
 
-# ============================================================
-# Badgwell (1997), Example 2: Multivariable CSTR
-#
-# Important:
-# The paper gives the continuous-time model and tuning:
-#   alpha = 1.0, Da = 20.0
-#   beta in {-0.45, -1.00}
-#   Q = I, R = 0.01 I, N = 2
-# but does NOT state the sampling time used for discretization.
-#
-# So this script reproduces a SIMILAR result, not a guaranteed
-# pixel-perfect copy of Figures 5-9.
-# ============================================================
-
-# ----------------------------
 # User-tunable discretization
-# ----------------------------
 DT = 0.5
 T_STEPS = 9
 DISCRETIZATION_METHOD = "zoh"   # options: "zoh", "euler", "tustin"
 
-# ----------------------------
 # Published example parameters
-# ----------------------------
 alpha = 1.0
 Da = 20.0
 
@@ -49,10 +31,7 @@ T_min_scalar = 10000.0
 eps_min = 0.0
 
 
-# ============================================================
 # Continuous and discrete models
-# ============================================================
-
 def cstr_continuous_matrices(beta: float):
     """
     Continuous-time model from the paper:
@@ -131,10 +110,8 @@ def make_discrete_model(beta: float, dt: float):
 
     return Ad, Bd
 
-# ============================================================
-# Cost helpers
-# ============================================================
 
+# Cost helpers
 def terminal_cost_matrix(A):
     """
     P solves:
@@ -161,10 +138,7 @@ def rollout_cost(A, B, x, u_seq):
     return cost
 
 
-# ============================================================
 # Prediction matrices
-# ============================================================
-
 def predict_states(A, B, x0, u_seq):
     """
     Returns [x1, x2, ..., xN]
@@ -177,10 +151,7 @@ def predict_states(A, B, x0, u_seq):
     return xs
 
 
-# ============================================================
 # NMPC (nominal only)
-# ============================================================
-
 def solve_nmpc(xk, A_nom, B_nom):
     """
     Nominal MPC with horizon N=2 and no explicit constraints.
@@ -206,10 +177,7 @@ def solve_nmpc(xk, A_nom, B_nom):
     return u_seq
 
 
-# ============================================================
 # RMPC without soft state constraints (Figures 6 and 8 style)
-# ============================================================
-
 def solve_rmpc_unconstrained(xk, A_nom, B_nom, model_set, p_hat):
     """
     Robust MPC:
@@ -253,10 +221,8 @@ def solve_rmpc_unconstrained(xk, A_nom, B_nom, model_set, p_hat):
     return np.array(u.value)
 
 
-# ============================================================
-# Soft state-constraint helpers (Figure 9 style)
-# ============================================================
 
+# Soft state-constraint helpers (Figure 9 style)
 def build_soft_state_constraints(xs, eps, xmin, xmax):
     """
     For M prediction steps:
@@ -365,10 +331,8 @@ def solve_rmpc_soft_constraints(xk, A_nom, B_nom, model_set, p_hat, eps_hat, T_s
     return np.array(u.value), np.array(eps.value)
 
 
-# ============================================================
-# Closed-loop simulators
-# ============================================================
 
+# Closed-loop simulators
 def shift_sequence(u_seq):
     """
     p_hat = shifted previous optimal input sequence
@@ -462,10 +426,8 @@ def simulate_rmpc_soft(true_model, nominal_model, model_set):
     return np.array(xs), np.array(us), np.array(eps_hist)
 
 
-# ============================================================
-# Plotting
-# ============================================================
 
+# Plotting
 def plot_state_input(xs, us, title, y_lim=None, state_y_lim=None, input_y_lim=None):
     # Trim the final state so both traces share the same 1..(T_STEPS+1) time axis.
     n_plot = min(us.shape[0], xs.shape[0] - 1)
@@ -562,10 +524,8 @@ def plot_state_input_with_soft_bounds(xs, us, title, y_lim=None):
     return fig, axes
 
 
-# ============================================================
-# Main
-# ============================================================
 
+# Main
 if __name__ == "__main__":
     fig35_ylim = (-10, 10)
 
